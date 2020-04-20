@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/downloadExcel">下载模板</a>
+    <input type="file" id="excel" name="excel" onchange="fileType(this)" >
+    <button id="upload_btn" onclick="upload()" >导入</button>
+    <script src="../static/jquery.min.js"></script>
+    <script>
+    //保存
+    function upload(){
+        if($("#excel").val()=="" || document.getElementById("excel").files[0] =='请选择xls格式的文件'){
+            alert("请上传xls格式的文件")
+            return false;
+        }
+        // 构建form数据
+        var formFile = new FormData();
+        //把文件放入form对象中
+        formFile.append("excel", $("#excel")[0].files[0]);
+
+        $("#upload_btn")[0].innerHTML="<i class=\"fa fa-spinner fa-spin\"></i>导入中"
+        $("#upload_btn").attr("disabled",true);
+        $.ajax({
+            type: "post",
+            url: "/upload",
+            processData: false,		//用于对data参数进行序列化处理 这里必须false
+            contentType: false,
+            dataType: "json",
+            data: formFile,
+            success: function (data) {
+                if (data=="success") {
+                    alert("批量导入成功！")
+                    $("#upload_btn")[0].innerHTML="导入"
+                    $("#upload_btn").attr("disabled",false);
+                }else{
+                    alert(data)
+                    $("#upload_btn")[0].innerHTML="导入"
+                    $("#upload_btn").attr("disabled",false);
+                }
+            },
+            error: function (data) {
+                alert("Error")
+                $("#upload_btn")[0].innerHTML="导入"
+                $("#upload_btn").attr("disabled",false);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+    //校验文件
+    function fileType(obj){
+        var fileType=obj.value.substr(obj.value.lastIndexOf(".")).toLowerCase();//获得文件后缀名
+        if(fileType != '.xls'){
+            alert("请上传xls格式的文件")
+            $("#excel").val('');
+            document.getElementById("excel").files[0] = '请选择xls格式的文件';
+        }
+    }
+</script>
+</body>
+</html>
